@@ -1,7 +1,6 @@
 import os
 import random
 import json
-import shutil
 import signal
 import subprocess
 import time
@@ -49,6 +48,46 @@ def is_root_path(path):
     else:
         return (path == "/")
 
+def recursive_remove(path):
+    """
+    Recursively delete a file or directory using os.remove and os.rmdir.
+    """
+    if not os.path.exists(path):
+        print(f"[INFO] Path does not exist: {path}")
+        return
+
+    if os.path.isfile(path):
+        try:
+            print(f"[DELETING FILE] => {path}")
+            os.remove(path)
+        except Exception as e:
+            print(f"[ERROR] Could not delete file: {path}. Reason: {e}")
+    elif os.path.isdir(path):
+        try:
+            # Liste tous les éléments dans le dossier
+            for root, dirs, files in os.walk(path, topdown=False):
+                for name in files:
+                    file_path = os.path.join(root, name)
+                    try:
+                        print(f"[DELETING FILE] => {file_path}")
+                        os.remove(file_path)
+                    except Exception as e:
+                        print(f"[ERROR] Could not delete file: {file_path}. Reason: {e}")
+                for name in dirs:
+                    dir_path = os.path.join(root, name)
+                    try:
+                        print(f"[DELETING FOLDER] => {dir_path}")
+                        os.rmdir(dir_path)
+                    except Exception as e:
+                        print(f"[ERROR] Could not delete folder: {dir_path}. Reason: {e}")
+            # Supprime le dossier racine après avoir supprimé tout son contenu
+            print(f"[DELETING FOLDER] => {path}")
+            os.rmdir(path)
+        except Exception as e:
+            print(f"[ERROR] Could not delete folder: {path}. Reason: {e}")
+    else:
+        print(f"[WARNING] Path is neither file nor directory: {path}")
+
 def force_delete_path(path):
     if not os.path.exists(path):
         print(f"[INFO] Path does not exist: {path}")
@@ -72,7 +111,7 @@ def force_delete_path(path):
             os.remove(path)
         else:
             print(f"[DELETING FOLDER] => {path}")
-            shutil.rmtree(path)
+            recursive_remove(path)
     except Exception as e:
         print(f"[ERROR] Could not delete path: {path}. Reason: {e}")
 
