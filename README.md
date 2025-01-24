@@ -4,7 +4,7 @@ Welcome to Casino Directory, a unique gaming experience where your files and fol
 
 Forget money: in this casino, your personal files are the currency. Test your luck, defy the odds and dare to risk everything... or lose everything. Every decision counts, and every gamble could have unexpected consequences! Good luck ! 🍀🃏
 
-*Pay attention the games can delete your root file.*
+*Pay attention the games can delete your root file. At your own risks.*
 
 ## Prerequisites
 
