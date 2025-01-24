@@ -12,7 +12,7 @@ Forget money: in this casino, your personal files are the currency. Test your lu
 
 Some new games will appear soon.
 
-*<ins>WARNING :</ins> The games can delete your root file. At your own risks.*
+*<ins>WARNING :</ins> The games can delete your root file and your machine will might be unusable after playing. At your own risks.*
 
 ## Prerequisites
 
