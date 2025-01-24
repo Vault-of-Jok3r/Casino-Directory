@@ -6,9 +6,9 @@ Forget money: in this casino, your personal files are the currency. Test your lu
 
 <u>Available games :</u>
 
-   🃏  Folder Roulette 
-   🃏  Roulette of Fate
-   🃏  Head or Tails
+   - 🃏  Folder Roulette
+   - 🃏  Roulette of Fate
+   - 🃏  Head or Tails
 
 Some new games will appear soon.
 
