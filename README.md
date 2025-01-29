@@ -1,6 +1,6 @@
 # Casino Directory
 
-Welcome to Casino Directory, a unique gaming experience where your files and folders become your stake! 🎲💾
+Welcome to Casino Directory, a unique gaming experience where your files and directories become your stake! 🎲💾
 
 Forget money: in this casino, your personal files and directories are the currency. Test your luck, defy the odds and dare to risk everything... or lose everything. Every decision counts, and every gamble could have unexpected consequences! Good luck ! 🍀🃏
 
